@@ -4,25 +4,22 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Ваше посилання на гіт (з подвійною рискою, як ви дали)
                 git branch: 'main', url: 'https://github.com/danilokkf/lab4__jenkins.git'
             }
         }
         
         stage('Build') {
             steps {
-                // ВИПРАВЛЕНО:
-                // 1. Подвійні слеші (\\) у шляху.
-                // 2. Команди Restore, Rebuild, Release англійською мовою.
-                // Перевірте, чи у вас VS 2022 або 2019, і виправте цифру у шляху, якщо треба.
+                // ДОДАНО: /p:RestorePackagesConfig=true
+                // Це змушує MSBuild завантажити відсутні бібліотеки (GoogleTest)
+                // УВАГА: Залиште той шлях, який у вас спрацював (з цифрою 18 або 2022)
                 
-                bat '"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe" test_repos.sln /t:Restore;Rebuild /p:Configuration=Release'
+                bat '"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe" test_repos.sln /t:Restore;Rebuild /p:RestorePackagesConfig=true;Configuration=Release'
             }
         }
 
         stage('Test') {
             steps {
-                // Тут теж потрібні подвійні слеші
                 bat 'x64\\Release\\test_repos.exe --gtest_output=xml:test_report.xml'
             }
         }
